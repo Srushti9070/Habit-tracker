@@ -16,9 +16,6 @@ function saveToLocalStorage() {
     localStorage.setItem('prodPulse_tasks', JSON.stringify(tasks));
 }
 
-/* ==========================================================================
-   2. THEME & NAVIGATION CONTROLS
-   ========================================================================== */
 function initTheme() {
     const themeToggle = document.getElementById('theme-toggle');
     const modeIcon = themeToggle.querySelector('.mode-icon');
@@ -54,14 +51,11 @@ function initTabs() {
     });
 }
 
-/* ==========================================================================
-   3. TASK MANIPULATION (ADD, EDIT, DELETE, TOGGLE)
-   ========================================================================== */
 function initForm() {
     const form = document.getElementById('task-form');
     const cancelBtn = document.getElementById('cancel-edit-btn');
     
-    // Set default date input value to today's local date
+    
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('task-date').value = today;
 
@@ -87,7 +81,7 @@ function initForm() {
             document.getElementById('form-title').textContent = "Create New Task";
             cancelBtn.classList.add('hidden');
         } else {
-            // Create Brand New Task
+        
             const newTask = {
                 id: Date.now().toString(),
                 title,
@@ -156,7 +150,7 @@ function startEditTask(id) {
     document.getElementById('form-title').textContent = "Modify Task Elements";
     document.getElementById('cancel-edit-btn').classList.remove('hidden');
     
-    // Smooth scroll back to workspace form window
+    
     document.getElementById('task-form').scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -177,9 +171,7 @@ function initFilters() {
     document.getElementById('filter-status').addEventListener('change', renderApp);
 }
 
-/* ==========================================================================
-   4. CORE RENDERING ENGINE (DOM INJECTION)
-   ========================================================================== */
+
 function renderApp() {
     const searchVal = document.getElementById('search-input').value.toLowerCase();
     const catFilter = document.getElementById('filter-category').value;
@@ -194,7 +186,6 @@ function renderApp() {
 
     const todayStr = new Date().toISOString().split('T')[0];
 
-    // Filter processing pipeline
     const filteredTasks = tasks.filter(task => {
         const matchesSearch = task.title.toLowerCase().includes(searchVal) || task.desc.toLowerCase().includes(searchVal);
         const matchesCat = catFilter === 'all' || task.category === catFilter;
@@ -229,10 +220,10 @@ function renderApp() {
             </li>
         `;
 
-        // Inject items into master list window
+    
         masterListElement.insertAdjacentHTML('beforeend', taskHTML);
 
-        // Inject matching dedicated daily items to top planner dashboard component
+        
         if (task.isPlanner) {
             plannerListElement.insertAdjacentHTML('beforeend', taskHTML);
         }
@@ -248,9 +239,7 @@ function renderApp() {
     calculateSidebarMetrics();
 }
 
-/* ==========================================================================
-   5. METRICS, MATHEMATICAL SCORES & SUGGESTIONS
-   ========================================================================== */
+
 function calculateSidebarMetrics() {
     const total = tasks.length;
     const completed = tasks.filter(t => t.completed).length;
@@ -259,13 +248,13 @@ function calculateSidebarMetrics() {
     const todayStr = new Date().toISOString().split('T')[0];
     const overdue = tasks.filter(t => !t.completed && t.date < todayStr).length;
 
-    // Display counts safely
+    
     document.getElementById('stat-total').textContent = total;
     document.getElementById('stat-completed').textContent = completed;
     document.getElementById('stat-pending').textContent = pending;
     document.getElementById('stat-overdue').textContent = overdue;
 
-    // Complex Productivity Score Engine
+    
     let baseScore = 0;
     if (total > 0) {
         const completionRate = completed / total;
@@ -277,7 +266,6 @@ function calculateSidebarMetrics() {
 
     document.getElementById('prod-score').textContent = baseScore;
 
-    // Generate Contextual Dynamic Insights & Feedbacks
     const feedbackText = document.getElementById('score-feedback');
     const insightsList = document.getElementById('insights-list');
     insightsList.innerHTML = '';
@@ -294,7 +282,7 @@ function calculateSidebarMetrics() {
         feedbackText.textContent = "Add and complete tasks to build momentum!";
     }
 
-    // Dynamic generation of optimization recommendations
+    
     if (overdue > 0) {
         insights.push(`🚨 System tracking <strong>${overdue} overdue task(s)</strong>. Break structural backlog loops to recover points.`);
     }
@@ -318,18 +306,16 @@ function calculateSidebarMetrics() {
     });
 }
 
-/* ==========================================================================
-   6. ANALYTICS ENGINE (BAR CHART & DATA DENSITY SPLITS)
-   ========================================================================== */
+
 function renderAnalytics() {
-    // A. 7-Day Performance Rolling Bar Chart Builder
+
     const chartContainer = document.getElementById('weekly-chart');
     chartContainer.innerHTML = '';
 
     const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const today = new Date();
     
-    // Trace exact relative dates for previous seven calendar days
+ 
     let pastSevenDays = [];
     for (let i = 6; i >= 0; i--) {
         const d = new Date();
@@ -340,20 +326,20 @@ function renderAnalytics() {
         });
     }
 
-    // Determine standard highest workload limit scaling coefficient
+    
     let maxDayCount = 1;
     pastSevenDays.forEach(day => {
         const count = tasks.filter(t => t.date === day.dateString).length;
         if (count > maxDayCount) maxDayCount = count;
     });
 
-    // Render semantic HTML/CSS Bar elements
+
     pastSevenDays.forEach(day => {
         const dayTasks = tasks.filter(t => t.date === day.dateString);
         const count = dayTasks.length;
         const completedCount = dayTasks.filter(t => t.completed).length;
         
-        // Calculate dynamic proportional height layout scaling percent
+       
         const heightPercent = (count / maxDayCount) * 100;
         
         const barWrapper = document.createElement('div');
@@ -369,7 +355,7 @@ function renderAnalytics() {
         chartContainer.appendChild(barWrapper);
     });
 
-    // B. Category Distribution Matrix Builder
+
     const catContainer = document.getElementById('category-metrics');
     catContainer.innerHTML = '';
     const categories = ['Work', 'Personal', 'Health', 'Finance'];
@@ -382,7 +368,6 @@ function renderAnalytics() {
         catContainer.insertAdjacentHTML('beforeend', createMetricRowMarkup(cat, totalCat, compCat, pct));
     });
 
-    // C. Priority Metrics Matrix Builder
     const prioContainer = document.getElementById('priority-metrics');
     prioContainer.innerHTML = '';
     const priorities = ['High', 'Medium', 'Low'];
@@ -410,9 +395,7 @@ function createMetricRowMarkup(label, total, completed, percentage) {
     `;
 }
 
-/* ==========================================================================
-   7. SECURITY UTILITIES
-   ========================================================================== */
+
 function escapeHTML(str) {
     if (!str) return '';
     return str.replace(/[&<>'"]/g, 
